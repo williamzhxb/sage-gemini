@@ -2,14 +2,14 @@ class ArticlesController < ApplicationController
   # GET /articles
   def index
     articles = Article.order(published_at: :desc)
-    render json: articles.as_json
+    render json: articles.as_json(except: [:created_at, :updated_at])
   end
 
   # GET /articles/<id>
   def show
     article = Article.find_by(id: params[:id])
     if article
-      render json: article.as_json
+      render json: article.as_json(except: [:created_at, :updated_at])
     else
       head :not_found
     end
@@ -20,7 +20,7 @@ class ArticlesController < ApplicationController
     article = Article.new(article_params)
 
     if article.save
-      render json: article.as_json, status: :created
+      render json: article.as_json(except: [:created_at, :updated_at]), status: :created
     else
       render json: article.errors, status: :unprocessable_entity
     end
