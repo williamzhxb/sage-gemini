@@ -1,51 +1,49 @@
 class ArticlesController < ApplicationController
-  before_action :set_article, only: [:show, :update, :destroy]
-
   # GET /articles
   def index
-    @articles = Article.all
-
-    render json: @articles
+    articles = Article.order(published_at: :desc)
+    render json: articles.as_json
   end
 
-  # GET /articles/1
+  # GET /articles/<id>
   def show
-    render json: @article
+    article = Article.find_by(id: params[:id])
+    if article
+      render json: article.as_json
+    else
+      head :not_found
+    end
   end
 
   # POST /articles
   def create
-    @article = Article.new(article_params)
+    article = Article.new(article_params)
 
-    if @article.save
-      render json: @article, status: :created, location: @article
+    if article.save
+      render json: article.as_json, status: :created
     else
-      render json: @article.errors, status: :unprocessable_entity
+      render json: article.errors, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /articles/1
+  # PATCH/PUT /articles/<id>
   def update
-    if @article.update(article_params)
-      render json: @article
-    else
-      render json: @article.errors, status: :unprocessable_entity
-    end
+    head :method_not_allowed
   end
 
-  # DELETE /articles/1
+  # DELETE /articles/<id>
   def destroy
-    @article.destroy
+    head :method_not_allowed
+  end
+
+  # Patch /articles/<id>
+  def patch
+    head :method_not_allowed
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_article
-      @article = Article.find(params[:id])
-    end
-
     # Only allow a trusted parameter "white list" through.
     def article_params
-      params.require(:article).permit(:title, :content, :author, :category, :published_at)
+      params.permit(:title, :content, :author, :category, :published_at)
     end
 end
